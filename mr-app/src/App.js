@@ -1,51 +1,65 @@
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import storage from "./firebase.js"
 import {ref, uploadBytesResumable, getDownloadURL} from "firebase/storage"
+import FileUpload from './pages/fileUpload.js'
+import ClickableBox from 'clickable-box';
+import {Routes, Route, useNavigate} from 'react-router-dom';
+import { db } from './firebase.js';
+import { collection, query, onSnapshot, serverTimestamp, addDoc, getDoc, doc} from 'firebase/firestore';
+import UserEvent from "./pages/userEvent.js";
  
+import React from 'react';
+import {
+  Timeline,
+  Events,
+  UrlButton,
+  ImageEvent,
+  TextEvent,
+  YouTubeEvent,
+  Button,
+} from '@merc/react-timeline';
+import { async } from "@firebase/util"
+
 function App() {
-    const [file, setFile] = useState("");
-    // progress
-    const [percent, setPercent] = useState(0);
- 
-    // Handles input change event and updates state
-    function handleChange(event) {
-        setFile(event.target.files[0]);
-    }
 
-    function handleUpload() {
-        if (!file) {
-            alert("Please choose a file first!")
-        }
-        const storageRef = ref(storage, `/files/${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
+  const navigate = useNavigate();
 
-        uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                const percent = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
-     
-                // update progress
-                setPercent(percent);
-            },
-            (err) => console.log(err),
-            () => {
-                // download url
-                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    console.log(url);
-                });
-            }
-        ); 
-    }
- 
+  const upload = useState(false);
+  const [events, setEvents]=useState([]);
+
+  const fetchEvents=async()=>{
+    const response = collection(db, 'user-events');
+    const data = await getDoc(response);
+    data.forEach((doc)=>{
+      setEvents(data.map(doc) => ({
+        id: doc.id,
+        item:doc.data()
+      }))
+    })
+  }
+
+  useEffect(() => {
+    fetchEvents();
+  }, [])
+
+  const clickEvent = () => {
+    //alert("You clicked. Yay!");
+    navigate('./pages/eventClick.js')
+  }
+
+  function TimelineDisplay() {
     return (
-        <div>
-            <input type="file" onChange={handleChange}/>
-            <button onClick={handleUpload}>Upload to Firebase</button>
-            <p>{percent} "% done"</p>
-        </div>
-    );
+      <Timeline>
+        <Events>
+          {events.map(item => <UserEvent key = {item.id} events = {item} />)}
+        </Events>
+      </Timeline>
+    )
+  }
+
+  return (
+    <TimelineDisplay/>
+  );
 }
- 
+
 export default App;
