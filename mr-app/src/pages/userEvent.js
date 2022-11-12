@@ -14,7 +14,7 @@ const UserEvent=({event})=>{
         <ClickableBox onClick={() => navigate({pathname:'/events', search:"?id=" + event.id})}
             aria-label="Close modal"
             className={event.id + "clickbox"}>
-            <TextEvent date={event.item.date} text={event.item.text} />
+            <TextEvent date={event.item.date} text={event.item.text} > <button>Show Event </button></TextEvent>
         </ClickableBox>
             
     )
