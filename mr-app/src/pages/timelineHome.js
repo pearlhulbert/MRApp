@@ -7,15 +7,14 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../firebase.js";
 import {
   collection,
-  query,
   onSnapshot,
-  serverTimestamp,
   addDoc,
   getDoc,
   doc,
   getDocs,
 } from "firebase/firestore";
 import React from "react";
+
 import {
   Timeline,
   Events,

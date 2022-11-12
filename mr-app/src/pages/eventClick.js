@@ -2,9 +2,20 @@ import ReactDOM from "react-dom/client";
 import React, { useEffect } from "react";
 import "../App.css";
 import { db, storage } from "../firebase.js";
-import { doc, deleteDoc, addDoc, collection, setDoc } from "firebase/firestore";
+import {
+  doc,
+  query,
+  collection,
+  where,
+  getDoc,
+  documentId,
+  onSnapshot,
+  deleteDoc,
+  addDoc,
+  setDoc,
+} from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
@@ -31,6 +42,24 @@ const EventClick = () => {
 
   const navigate = useNavigate();
   const [param] = useSearchParams();
+  let currId = param.get("id");
+  const [event, setEvents] = useState();
+
+  const q = query(
+    collection(db, "user-events"),
+    where(db.FieldPath.documentId(), "==", currId)
+  );
+  //const querySnapshot = await getDocs(q);
+  useEffect(() => {
+    onSnapshot(q, (querySnapshot) => {
+      setEvents(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          item: doc.data(),
+        }))
+      );
+    });
+  }, [event]);
 
   const saveNotes = (e) => {
     e.preventDefault();
