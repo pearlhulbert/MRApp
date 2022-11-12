@@ -2,9 +2,9 @@ import ReactDOM from "react-dom/client";
 import React, { useEffect } from "react";
 import "../App.css";
 import { db } from "../firebase.js";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, addDoc, collection, setDoc } from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -20,23 +20,25 @@ import { useState } from "react";
 import "../styles/timeline.css";
 
 const EventClick = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const notesRef = useRef();
   const [notes, setNotes] = useState("");
+  const myCollection = collection(db, "user-events");
 
   const navigate = useNavigate();
   const [param] = useSearchParams();
 
-  const updateNotes = (text) => {
-    //save to firebase, async
-    setNotes(text);
-  };
-  const saveNotes = (event) => {
-    event.preventDefault();
-    setIsEditing(false);
-    console.log("saving", isEditing);
+  const saveNotes = (e) => {
+    e.preventDefault();
+    setNotes(notesRef.current.value);
+    // setDoc();
+    setIsEdit(false);
+    console.log("saving", isEdit);
   };
 
-  //   useEffect(() => {}, [isEditing]);
+  const updateEdit = () => {
+    setIsEdit(true);
+  };
 
   return (
     <div>
@@ -47,21 +49,15 @@ const EventClick = () => {
       </div>
       <div className="event-details">
         <p>This will show Drs notes</p>
-        {isEditing ? (
+        {isEdit ? (
           <form>
-            <textarea
-              className="input-text"
-              type="text"
-              onChange={(event) => {
-                updateNotes(event.target.value);
-              }}
-            />
+            <textarea className="input-text" type="text" ref={notesRef} />
             <br />
             <button
               className="button"
               type="submit"
-              onClick={(event) => {
-                saveNotes(event);
+              onClick={(e) => {
+                saveNotes(e);
               }}
             >
               Save
@@ -70,7 +66,8 @@ const EventClick = () => {
         ) : (
           <div>
             {notes}
-            <button className="button" onChange={setIsEditing(true)}>
+            <br />
+            <button className="button" onClick={updateEdit}>
               Edit
             </button>
           </div>
