@@ -3,6 +3,7 @@ import React from 'react';
 import '../App.css';
 import {db} from '../firebase.js';
 import { doc, deleteDoc } from "firebase/firestore";
+import {useNavigate} from 'react-router-dom';
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -16,13 +17,18 @@ import { doc, deleteDoc } from "firebase/firestore";
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
-const EventClick = ({info}) => {
+const EventClick = () => {
+
+    const navigate = useNavigate();
+  
+    
     return (
         <div>
-            <h1>{info.date}</h1>
-            <h2>{info.text}</h2>
+            <h1>1/1/19</h1>
+            <h2>covid-19 booster</h2>
             <p>This will show Drs notes</p>
             <p>This will display files and/or links to view files</p>
+            <button onClick={() => navigate('/')}>Back</button>
         </div>
     )
 } 
