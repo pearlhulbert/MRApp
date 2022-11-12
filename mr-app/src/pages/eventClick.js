@@ -17,13 +17,15 @@ import {useEffect, useState} from "react";
 // Import styles
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+import "../styles/timeline.css";
 
 const EventClick = () => {
-
-    const navigate = useNavigate();
-    const [param] = useSearchParams();
-    let currId = param.get("id");
-    const [event, setEvents] = useState();
+  const [isEditing, setIsEditing] = useState(false);
+  const [notes, setNotes] = useState("");
+  const navigate = useNavigate();
+  const [param] = useSearchParams();
+  let currId = param.get("id");
+  const [event, setEvents] = useState();
 
     const q = query(collection(db, "user-events"), where(db.FieldPath.documentId(), "==", currId));
     //const querySnapshot = await getDocs(q);
@@ -36,16 +38,61 @@ const EventClick = () => {
         })
       }, [event]);
 
-    return (
-        <div>
-            <h1>1/1/19</h1>
-            <p>{param.get("id")}</p>
-            <h2>covid-19 booster</h2>
-            <p>This will show Drs notes</p>
-            <p>This will display files and/or links to view files</p>
-            <button onClick={() => navigate('/')}>Back</button>
-        </div>
-    )
-} 
+  const updateNotes = (text) => {
+    //save to firebase, async
+    setNotes(text);
+  };
+  const saveNotes = (event) => {
+    event.preventDefault();
+    setIsEditing(false);
+    console.log("saving", isEditing);
+  };
+
+  //   useEffect(() => {}, [isEditing]);
+
+  return (
+    <div>
+      <h1 className="date">January 1st, 2019</h1>
+      <div className="event-header">
+        <h2>EventName: Covid-19 booster</h2>
+        <p>EventID: {param.get("id")}</p>
+      </div>
+      <div className="event-details">
+        <p>This will show Drs notes</p>
+        {isEditing ? (
+          <form>
+            <textarea
+              className="input-text"
+              type="text"
+              onChange={(event) => {
+                updateNotes(event.target.value);
+              }}
+            />
+            <br />
+            <button
+              className="button"
+              type="submit"
+              onClick={(event) => {
+                saveNotes(event);
+              }}
+            >
+              Save
+            </button>
+          </form>
+        ) : (
+          <div>
+            {notes}
+            <button className="button" onChange={setIsEditing(true)}>
+              Edit
+            </button>
+          </div>
+        )}
+
+        <p>This will display files and/or links to view files</p>
+      </div>
+      <button onClick={() => navigate("/")}>Back</button>
+    </div>
+  );
+};
 
 export default EventClick;
