@@ -5,7 +5,7 @@ import {
     Route
 } from "react-router-dom";
 import TimeLineHome from "./pages/timelineHome.js";
-import EventClick from "./pages/eventClick"
+import EventClick from "./pages/eventClick.js"
   
 import './App.css';
   
@@ -14,9 +14,9 @@ function App() {
         <BrowserRouter>
           <Routes>
           <Route path="/" 
-                element={TimeLineHome} />
+                element={<TimeLineHome/>} />
             <Route path="/events" 
-                element={EventClick} />
+                element={<EventClick/>} />
           </Routes>   
         </BrowserRouter>
     );
