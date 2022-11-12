@@ -8,7 +8,7 @@ import EventClick from "./eventClick.js";
 
 const UserEvent = ({ event }) => {
   const navigate = useNavigate();
-
+  
   return (
     <ClickableBox
       onClick={() =>
