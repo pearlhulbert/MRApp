@@ -1,10 +1,22 @@
 import ReactDOM from "react-dom/client";
-import React, { useCallback, useEffect } from 'react';
-import '../App.css';
-import {db} from '../firebase.js';
-import { doc, query, collection, where, getDoc, documentId, onSnapshot} from "firebase/firestore";
-import {useNavigate, useSearchParams} from 'react-router-dom';
-import {useState} from "react";
+import React, { useEffect } from "react";
+import "../App.css";
+import { db, storage } from "../firebase.js";
+import {
+  doc,
+  query,
+  collection,
+  where,
+  getDoc,
+  documentId,
+  onSnapshot,
+  deleteDoc,
+  addDoc,
+  setDoc,
+} from "firebase/firestore";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -16,14 +28,21 @@ import {useState} from "react";
 
 // Import styles
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-
 import "../styles/timeline.css";
 import { async } from "@firebase/util";
 import { connectStorageEmulator } from "firebase/storage";
+import { v4 } from "uuid";
+import "../styles/event.css";
 
 const EventClick = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const notesRef = useRef();
   const [notes, setNotes] = useState("");
+  const myCollection = collection(db, "user-events");
+  const [imageUpload, setImageUpload] = useState();
+  const [imageList, setImageList] = useState([]);
+  const imageListRef = ref(storage, "image/");
+
   const navigate = useNavigate();
   const [param] = useSearchParams();
   let currId = param.get("id");
@@ -37,62 +56,101 @@ const EventClick = () => {
   
   useEffect(() => {
     getEvents();
-    console.log("call");
-    console.log(event);
   }, []);
-
-
-  const updateNotes = (text) => {
-    //save to firebase, async
-    setNotes(text);
-  };
 
   const saveNotes = (e) => {
     e.preventDefault();
-    setIsEditing(false);
-    console.log("saving", isEditing);
+    setNotes(notesRef.current.value);
+    // setDoc();
+    setIsEdit(false);
+    console.log("saving", isEdit);
   };
+
+  const updateEdit = () => {
+    setIsEdit(true);
+  };
+  
+  const uploadImage = () => {
+    if (imageUpload === null) {
+      return;
+    }
+    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
+    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        setImageList((prev) => [...prev, url]);
+      });
+    });
+  };
+
+  useEffect(() => {
+    listAll(imageListRef).then((response) => {
+      console.log(response);
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageList((prev) => [...prev, url]);
+        });
+      });
+    });
+  }, []);
 
   return (
     <div>
-      <h1 className="date">{event.date}</h1>
+      <button className="back-button" onClick={() => navigate("/")}>
+        Back
+      </button>
       <div className="event-header">
-        <h2>Title: {event.eventType}</h2>
+        <h1>EventName: {event.date}</h1>
+        <h2 className="date">{event.eventType}</h2>
       </div>
-      <div className="event-details">
-        <p>Notes: {event.notes}</p>
-        {isEditing ? (
-          <form>
+      <div className="event-notes">
+        <p className="notes" onClick={updateEdit}>
+          Notes: {event.notes}
+        </p>
+        {isEdit ? (
+          <form className="event-content">
             <textarea
               className="input-text"
               type="text"
-              onChange={(e) => {
-                updateNotes(e.target.value);
-              }}
+              rows="9"
+              cols="95"
+              ref={notesRef}
             />
             <br />
             <button
               className="button"
               type="submit"
-              onClick={(event) => {
-                saveNotes(event);
+              onClick={(e) => {
+                saveNotes(e);
               }}
             >
               Save
             </button>
           </form>
         ) : (
-          <div>
-            {notes}
-            <button className="button" onChange={setIsEditing(true)}>
-              Edit
-            </button>
+          <div className="event-content">
+            <div className="display-text">{notes}</div>
+            <br />
           </div>
         )}
-
-        <p>This will display files and/or links to view files</p>
       </div>
-      <button onClick={() => navigate("/")}>Back</button>
+      <div className="event-files">
+        <p>Files: </p>
+        <br />
+        <input
+          type="file"
+          onChange={(e) => {
+            setImageUpload(e.target.files[0]);
+          }}
+        />
+        <button className="button" onClick={uploadImage}>
+          Upload Image
+        </button>
+        <div className="file-list">
+          {imageList.map((url) => {
+            return <img className="file-image" src={url}></img>;
+          })}
+        </div>
+      </div>
     </div>
   );
 };
