@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import storage from "../firebase.js";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import FileUpload from "./fileUpload.js";
@@ -28,8 +28,12 @@ import {
 import { async } from "@firebase/util";
 import UserEvent from "./userEvent.js";
 
+import "../styles/timeline.css";
+
 function TimeLineHome() {
   const [events, setEvents] = useState([]);
+  const searchRef = useRef();
+  const [searchText, setSearchText] = useState("");
 
   const navigate = useNavigate();
 
@@ -43,37 +47,6 @@ function TimeLineHome() {
       );
     });
   }, [events]);
-
-  /*const fetchEvents = async() => {
-    onSnapshot(collection(db, 'user-events'), (snapshot)=> {
-      setEvents(snapshot.docs.map(doc => ({
-        id: doc.id,
-        item: doc.data()
-      })))
-    })
-  }*/
-
-  /*useEffect(() => {
-    fetchEvents();
-  }, [])*/
-
-  /*function UserEvent({events}) {
-
-    const navigate = useNavigate();
-
-    return (
-        <div>
-            <div>
-                <ClickableBox onClick={() => navigate('/events')}
-                    aria-label="Close modal"
-                    className="icon-button">
-                    <TextEvent date={events.item.date} text={events.item.text} />
-                </ClickableBox>
-            </div>
-        </div>
-        
-    )
-  }*/
 
   function mapElements() {
     let eventOutput = events.map((item) => (
@@ -91,41 +64,27 @@ function TimeLineHome() {
     );
   }
 
-  // function HardCodeElems() {
-  //   return(<Timeline>
-  //     <Events>
-  //       <ClickableBox onClick={() => mapElements()}
-  //         aria-label="Close modal"
-  //         className="icon-button">
-  //         <TextEvent date="1/1/19" text="bar" />
-  //       </ClickableBox>
-  //       <ClickableBox onClick={() => alert("you clicked")}
-  //           aria-label="Close modal"
-  //           className="icon-button">
-  //           <TextEvent date="2/5/21" text="blabla"/>
-  //       </ClickableBox>
-  //     </Events>
-  //   </Timeline>)
-  // }
-
-  // function ClickBoxes() {
-  //   return(
-  //     <div>
-
-  //     </div>
-
-  //   )
-
-  // }
+  const handleSearch = () => {
+    setSearchText(searchRef);
+    //get from database
+  };
 
   return (
-    <Timeline>
-      <Events>
-        {events.map((event) => (
-          <UserEvent key={event.id} event={event} />
-        ))}
-      </Events>
-    </Timeline>
+    <>
+      <div className="search">
+        <input type="text" ref={searchRef} />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+      <div className="timeline">
+        <Timeline>
+          <Events>
+            {events.map((event) => (
+              <UserEvent key={event.id} event={event} />
+            ))}
+          </Events>
+        </Timeline>
+      </div>
+    </>
   );
 }
 

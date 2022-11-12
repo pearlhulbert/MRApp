@@ -1,10 +1,11 @@
 import ReactDOM from "react-dom/client";
 import React, { useEffect } from "react";
 import "../App.css";
-import { db } from "../firebase.js";
+import { db, storage } from "../firebase.js";
 import { doc, deleteDoc, addDoc, collection, setDoc } from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useRef } from "react";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -16,14 +17,17 @@ import { useState, useRef } from "react";
 
 // Import styles
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-
-import "../styles/timeline.css";
+import { v4 } from "uuid";
+import "../styles/event.css";
 
 const EventClick = () => {
   const [isEdit, setIsEdit] = useState(false);
   const notesRef = useRef();
   const [notes, setNotes] = useState("");
   const myCollection = collection(db, "user-events");
+  const [imageUpload, setImageUpload] = useState();
+  const [imageList, setImageList] = useState([]);
+  const imageListRef = ref(storage, "image/");
 
   const navigate = useNavigate();
   const [param] = useSearchParams();
@@ -40,18 +44,51 @@ const EventClick = () => {
     setIsEdit(true);
   };
 
+  const uploadImage = () => {
+    if (imageUpload === null) {
+      return;
+    }
+    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
+    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        setImageList((prev) => [...prev, url]);
+      });
+    });
+  };
+
+  useEffect(() => {
+    listAll(imageListRef).then((response) => {
+      console.log(response);
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageList((prev) => [...prev, url]);
+        });
+      });
+    });
+  }, []);
+
   return (
     <div>
-      <h1 className="date">January 1st, 2019</h1>
+      <button className="back-button" onClick={() => navigate("/")}>
+        Back
+      </button>
       <div className="event-header">
-        <h2>EventName: Covid-19 booster</h2>
-        <p>EventID: {param.get("id")}</p>
+        <h1>EventName: Covid-19 booster</h1>
+        <h2 className="date">January 1st, 2019</h2>
       </div>
-      <div className="event-details">
-        <p>This will show Drs notes</p>
+      <div className="event-notes">
+        <p className="notes" onClick={updateEdit}>
+          Notes:
+        </p>
         {isEdit ? (
-          <form>
-            <textarea className="input-text" type="text" ref={notesRef} />
+          <form className="event-content">
+            <textarea
+              className="input-text"
+              type="text"
+              rows="9"
+              cols="95"
+              ref={notesRef}
+            />
             <br />
             <button
               className="button"
@@ -64,18 +101,30 @@ const EventClick = () => {
             </button>
           </form>
         ) : (
-          <div>
-            {notes}
+          <div className="event-content">
+            <div className="display-text">{notes}</div>
             <br />
-            <button className="button" onClick={updateEdit}>
-              Edit
-            </button>
           </div>
         )}
-
-        <p>This will display files and/or links to view files</p>
       </div>
-      <button onClick={() => navigate("/")}>Back</button>
+      <div className="event-files">
+        <p>Files: </p>
+        <br />
+        <input
+          type="file"
+          onChange={(e) => {
+            setImageUpload(e.target.files[0]);
+          }}
+        />
+        <button className="button" onClick={uploadImage}>
+          Upload Image
+        </button>
+        <div className="file-list">
+          {imageList.map((url) => {
+            return <img className="file-image" src={url}></img>;
+          })}
+        </div>
+      </div>
     </div>
   );
 };
