@@ -15,7 +15,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
