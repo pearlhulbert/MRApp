@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom/client";
-import React, { useEffect } from "react";
 import "../App.css";
 import { db, storage } from "../firebase.js";
 import {
@@ -45,21 +44,21 @@ const EventClick = () => {
   let currId = param.get("id");
   const [event, setEvents] = useState();
 
-  const q = query(
-    collection(db, "user-events"),
-    where(db.FieldPath.documentId(), "==", currId)
-  );
+  //   const q = query(
+  //     collection(db, "user-events"),
+  //     where(db.FieldPath.documentId(), "==", currId)
+  //   );
   //const querySnapshot = await getDocs(q);
-  useEffect(() => {
-    onSnapshot(q, (querySnapshot) => {
-      setEvents(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          item: doc.data(),
-        }))
-      );
-    });
-  }, [event]);
+  //   useEffect(() => {
+  //     onSnapshot(q, (querySnapshot) => {
+  //       setEvents(
+  //         querySnapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           item: doc.data(),
+  //         }))
+  //       );
+  //     });
+  //   }, [event]);
 
   const saveNotes = (e) => {
     e.preventDefault();
@@ -102,7 +101,7 @@ const EventClick = () => {
         Back
       </button>
       <div className="event-header">
-        <h1>EventName: Covid-19 booster</h1>
+        <h1>Covid-19 booster</h1>
         <h2 className="date">January 1st, 2019</h2>
       </div>
       <div className="event-notes">
@@ -115,7 +114,7 @@ const EventClick = () => {
               className="input-text"
               type="text"
               rows="9"
-              cols="95"
+              cols="97"
               ref={notesRef}
             />
             <br />
@@ -137,17 +136,19 @@ const EventClick = () => {
         )}
       </div>
       <div className="event-files">
-        <p>Files: </p>
-        <br />
-        <input
-          type="file"
-          onChange={(e) => {
-            setImageUpload(e.target.files[0]);
-          }}
-        />
-        <button className="button" onClick={uploadImage}>
-          Upload Image
-        </button>
+        <p className="files">Files: </p>
+        <div className="upload-files">
+          <input
+            type="file"
+            onChange={(e) => {
+              setImageUpload(e.target.files[0]);
+              uploadImage();
+            }}
+          />
+          {/* <button className="button" onClick={uploadImage}> */}
+          {/* Upload Image
+          </button> */}
+        </div>
         <div className="file-list">
           {imageList.map((url) => {
             return <img className="file-image" src={url}></img>;
