@@ -10,14 +10,11 @@ const UserEvent = ({ event }) => {
   const navigate = useNavigate();
   
   return (
-    <ClickableBox
-      onClick={() =>
+    
+    <TextEvent date={event.item.date} text={event.item.eventType}><p>{event.item.notes}</p> <button onClick={() =>
         navigate({ pathname: "/events", search: "?id=" + event.id })
       }
-      className="clickbox"
-    >
-      <TextEvent date={event.item.date} text={event.item.eventType} />
-    </ClickableBox>
+      className="clickbox">show event</button></TextEvent>
   );
 };
 
