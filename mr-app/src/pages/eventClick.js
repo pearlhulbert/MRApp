@@ -1,10 +1,10 @@
 import ReactDOM from "react-dom/client";
-import React, { useEffect } from "react";
-import "../App.css";
-import { db } from "../firebase.js";
-import { doc, deleteDoc } from "firebase/firestore";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import React, { useEffect } from 'react';
+import '../App.css';
+import {db} from '../firebase.js';
+import { doc, query, collection, where, getDoc, documentId, onSnapshot} from "firebase/firestore";
+import {useNavigate, useSearchParams} from 'react-router-dom';
+import {useEffect, useState} from "react";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -22,9 +22,21 @@ import "../styles/timeline.css";
 const EventClick = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [notes, setNotes] = useState("");
-
   const navigate = useNavigate();
   const [param] = useSearchParams();
+  let currId = param.get("id");
+  const [event, setEvents] = useState();
+
+    const q = query(collection(db, "user-events"), where(db.FieldPath.documentId(), "==", currId));
+    //const querySnapshot = await getDocs(q);
+    useEffect(() => {
+        onSnapshot(q, (querySnapshot)=> {
+          setEvents(querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            item: doc.data()
+          })))
+        })
+      }, [event]);
 
   const updateNotes = (text) => {
     //save to firebase, async
