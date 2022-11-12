@@ -1,10 +1,10 @@
 import ReactDOM from "react-dom/client";
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import '../App.css';
 import {db} from '../firebase.js';
 import { doc, query, collection, where, getDoc, documentId, onSnapshot} from "firebase/firestore";
 import {useNavigate, useSearchParams} from 'react-router-dom';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
 //import { Viewer } from '@react-pdf-viewer/core';
@@ -18,6 +18,8 @@ import {useEffect, useState} from "react";
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 import "../styles/timeline.css";
+import { async } from "@firebase/util";
+import { connectStorageEmulator } from "firebase/storage";
 
 const EventClick = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -25,47 +27,47 @@ const EventClick = () => {
   const navigate = useNavigate();
   const [param] = useSearchParams();
   let currId = param.get("id");
-  const [event, setEvents] = useState();
+  const [event, setEvent] = useState({});
 
-    const q = query(collection(db, "user-events"), where(db.FieldPath.documentId(), "==", currId));
-    //const querySnapshot = await getDocs(q);
-    useEffect(() => {
-        onSnapshot(q, (querySnapshot)=> {
-          setEvents(querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            item: doc.data()
-          })))
-        })
-      }, [event]);
+  const getEvents = useCallback(async () => {
+    const docRef = await doc(db, "user-events", currId);
+    const docSnap = await getDoc(docRef);
+    setEvent(docSnap.data());
+  }, [event, currId, setEvent])
+  
+  useEffect(() => {
+    getEvents();
+    console.log("call");
+    console.log(event);
+  }, []);
+
 
   const updateNotes = (text) => {
     //save to firebase, async
     setNotes(text);
   };
-  const saveNotes = (event) => {
-    event.preventDefault();
+
+  const saveNotes = (e) => {
+    e.preventDefault();
     setIsEditing(false);
     console.log("saving", isEditing);
   };
 
-  //   useEffect(() => {}, [isEditing]);
-
   return (
     <div>
-      <h1 className="date">January 1st, 2019</h1>
+      <h1 className="date">{event.date}</h1>
       <div className="event-header">
-        <h2>EventName: Covid-19 booster</h2>
-        <p>EventID: {param.get("id")}</p>
+        <h2>Title: {event.eventType}</h2>
       </div>
       <div className="event-details">
-        <p>This will show Drs notes</p>
+        <p>Notes: {event.notes}</p>
         {isEditing ? (
           <form>
             <textarea
               className="input-text"
               type="text"
-              onChange={(event) => {
-                updateNotes(event.target.value);
+              onChange={(e) => {
+                updateNotes(e.target.value);
               }}
             />
             <br />
