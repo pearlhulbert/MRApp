@@ -48,8 +48,8 @@ const EventClick = () => {
   let currId = param.get("id");
   const [event, setEvent] = useState({});
 
-  const getEvents = useCallback(async () => {
-    const docRef = doc(db, "user-events", currId);
+  const getEvent = useCallback(async () => {
+    const docRef = await doc(db, "user-events", currId);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data());
     setEvent(docSnap.data());
@@ -57,7 +57,7 @@ const EventClick = () => {
   }, [event, currId, setEvent, notes]);
 
   useEffect(() => {
-    getEvents();
+    getEvent();
   }, []);
 
   const saveNotes = async (e) => {
