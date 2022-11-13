@@ -14,7 +14,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
@@ -27,6 +27,9 @@ import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 
 // Import styles
 //import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import "../styles/timeline.css";
+import { async } from "@firebase/util";
+import { connectStorageEmulator } from "firebase/storage";
 import { v4 } from "uuid";
 import "../styles/event.css";
 
@@ -42,23 +45,18 @@ const EventClick = () => {
   const navigate = useNavigate();
   const [param] = useSearchParams();
   let currId = param.get("id");
-  const [event, setEvents] = useState();
+  const [event, setEvent] = useState({});
 
-  //   const q = query(
-  //     collection(db, "user-events"),
-  //     where(db.FieldPath.documentId(), "==", currId)
-  //   );
-  //const querySnapshot = await getDocs(q);
-  //   useEffect(() => {
-  //     onSnapshot(q, (querySnapshot) => {
-  //       setEvents(
-  //         querySnapshot.docs.map((doc) => ({
-  //           id: doc.id,
-  //           item: doc.data(),
-  //         }))
-  //       );
-  //     });
-  //   }, [event]);
+
+  const getEvents = useCallback(async () => {
+    const docRef = await doc(db, "user-events", currId);
+    const docSnap = await getDoc(docRef);
+    setEvent(docSnap.data());
+  }, [event, currId, setEvent])
+  
+  useEffect(() => {
+    getEvents();
+  }, []);
 
   const saveNotes = (e) => {
     e.preventDefault();
@@ -71,7 +69,7 @@ const EventClick = () => {
   const updateEdit = () => {
     setIsEdit(true);
   };
-
+  
   const uploadImage = () => {
     if (imageUpload === null) {
       return;
@@ -101,12 +99,13 @@ const EventClick = () => {
         Back
       </button>
       <div className="event-header">
-        <h1>Covid-19 booster</h1>
-        <h2 className="date">January 1st, 2019</h2>
+
+        <h1>EventName: {event.date}</h1>
+        <h2 className="date">{event.eventType}</h2>
       </div>
       <div className="event-notes">
         <p className="notes" onClick={updateEdit}>
-          Notes:
+          Notes: {event.notes}
         </p>
         {isEdit ? (
           <form className="event-content">
