@@ -12,9 +12,10 @@ import {
   deleteDoc,
   addDoc,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { Worker } from '@react-pdf-viewer/core';
 // Import the main component
@@ -47,29 +48,40 @@ const EventClick = () => {
   let currId = param.get("id");
   const [event, setEvent] = useState({});
 
-
   const getEvents = useCallback(async () => {
-    const docRef = await doc(db, "user-events", currId);
+    const docRef = doc(db, "user-events", currId);
     const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
     setEvent(docSnap.data());
-  }, [event, currId, setEvent])
-  
+    setNotes(docSnap.data().notes);
+  }, [event, currId, setEvent, notes]);
+
   useEffect(() => {
     getEvents();
   }, []);
 
-  const saveNotes = (e) => {
+  const saveNotes = async (e) => {
     e.preventDefault();
+
     setNotes(notesRef.current.value);
-    // setDoc();
+    console.log(notesRef.current.value);
+    const userDoc = doc(db, "user-events", currId);
+    const newFields = {
+      date: event.date,
+      eventType: event.eventType,
+      notes: notesRef.current.value,
+    };
+
+    await updateDoc(userDoc, newFields);
+
     setIsEdit(false);
-    console.log("saving", isEdit);
+    console.log("saving", notes);
   };
 
   const updateEdit = () => {
     setIsEdit(true);
   };
-  
+
   const uploadImage = () => {
     if (imageUpload === null) {
       return;
@@ -99,13 +111,12 @@ const EventClick = () => {
         Back
       </button>
       <div className="event-header">
-
-        <h1>EventName: {event.date}</h1>
-        <h2 className="date">{event.eventType}</h2>
+        <h1>{event.eventType}</h1>
+        <h2 className="date">{event.date}</h2>
       </div>
       <div className="event-notes">
         <p className="notes" onClick={updateEdit}>
-          Notes: {event.notes}
+          Notes:
         </p>
         {isEdit ? (
           <form className="event-content">
@@ -115,7 +126,9 @@ const EventClick = () => {
               rows="9"
               cols="97"
               ref={notesRef}
-            />
+            >
+              {notes}
+            </textarea>
             <br />
             <button
               className="button"
