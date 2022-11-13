@@ -11,10 +11,12 @@
 .button {
   background-color: rgb(235, 245, 253);
   border: 1px solid black;
-  padding: 5px;
-  border-radius: 10%;
+  padding: 5px 10px;
+  border-radius: 50px;
+  border-color: transparent;
 }
-.button:hover {
+.button:hover,
+.back-button:hover {
   cursor: pointer;
   background-color: rgb(224, 249, 249);
 }
@@ -24,15 +26,18 @@
 }
 .event-header {
   display: flex;
-  width: 100%;
   flex-direction: column;
   align-items: center;
+  background-color: rgb(203, 224, 232);
+  padding: 20px;
+  margin-bottom: 50px;
 }
 
 .input-text {
   padding: 10px;
   font-size: 1rem;
   background-color: transparent;
+  border-radius: 25px;
 }
 .display-text {
   font-size: 1rem;
@@ -56,6 +61,10 @@
   border-radius: 25px;
 }
 
+.notes {
+  text-align: center;
+  margin-bottom: 5px;
+}
 .notes:hover {
   cursor: pointer;
   text-decoration-line: underline;
@@ -66,14 +75,14 @@
   background-color: rgb(203, 224, 232);
   width: 900px;
   padding: 20px;
-  height: 250px;
+  height: 200px;
   border-radius: 25px;
 }
 
 .file-list {
   display: flex;
   flex-direction: row;
-  margin: 20px 0px;
+  margin: 20px;
   overflow-x: auto;
 }
 
@@ -81,4 +90,26 @@
   width: 200px;
   margin-right: 20px;
   margin-bottom: 10px;
+}
+
+.back-button {
+  background-color: rgb(203, 224, 232);
+  border: 1px solid black;
+  padding: 5px 10px;
+  position: fixed;
+  top: 20px;
+  left: 50px;
+  border-radius: 50px;
+  border-color: rgb(203, 224, 232);
+}
+
+.files {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.upload-files {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
