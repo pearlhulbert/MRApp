@@ -8,13 +8,19 @@ import EventClick from "./eventClick.js";
 
 const UserEvent = ({ event }) => {
   const navigate = useNavigate();
-  
+
   return (
-    
-    <TextEvent date={event.item.date} text={event.item.eventType}><p>{event.item.notes}</p> <button onClick={() =>
-        navigate({ pathname: "/events", search: "?id=" + event.id })
-      }
-      className="clickbox">show event</button></TextEvent>
+    <TextEvent date={event.item.date} text={event.item.eventType}>
+      <p id="timeline-notes">{event.item.notes}</p>{" "}
+      <button
+        onClick={() =>
+          navigate({ pathname: "/events", search: "?id=" + event.id })
+        }
+        className="event-button"
+      >
+        show appointment
+      </button>
+    </TextEvent>
   );
 };
 
