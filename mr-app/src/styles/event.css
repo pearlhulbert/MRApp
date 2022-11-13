@@ -16,7 +16,8 @@
   border-color: transparent;
 }
 .button:hover,
-.back-button:hover {
+.back-button:hover,
+.event-button:hover {
   cursor: pointer;
   background-color: rgb(224, 249, 249);
 }
@@ -93,11 +94,11 @@
 }
 
 .back-button {
-  background-color: rgb(203, 224, 232);
+  background-color: rgb(235, 245, 253);
   border: 1px solid black;
   padding: 5px 10px;
   position: fixed;
-  top: 20px;
+  top: 30px;
   left: 50px;
   border-radius: 50px;
   border-color: rgb(203, 224, 232);
@@ -112,4 +113,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.user-profile {
+  display: block;
+  border-radius: 100%;
+  background-color: rgb(235, 245, 253);
+  padding: 10px;
+  font-size: 2rem;
+  position: fixed;
+  top: 30px;
+  right: 50px;
 }

@@ -113,6 +113,7 @@ const EventClick = () => {
       <div className="event-header">
         <h1>{event.eventType}</h1>
         <h2 className="date">{event.date}</h2>
+        <p className="user-profile">RB</p>
       </div>
       <div className="event-notes">
         <p className="notes" onClick={updateEdit}>

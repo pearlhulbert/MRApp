@@ -1,9 +1,16 @@
+* {
+  color: black !important;
+  /* font-size: 1rem; */
+}
+body {
+  background-color: rgb(235, 245, 253);
+}
 .kwyXWH.kwyXWH {
-  border: 2px solid blue !important;
+  border: 2px solid rgb(203, 224, 232) !important;
 }
 .dzZetr.dzZetr,
 .jixunx::after {
-  background-color: blue !important;
+  background-color: rgb(203, 224, 232) !important;
 }
 
 .clickbox:hover {
@@ -17,4 +24,40 @@
 .timeline {
   height: 90%;
   overflow-y: auto;
+}
+
+.bxszJG.bxszJG {
+  background-color: rgb(203, 224, 232) !important;
+}
+
+#timeline-notes {
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.event-button {
+  background-color: white;
+  border: 1px solid black;
+  padding: 5px 10px;
+  border-radius: 50px;
+  border-color: transparent;
+  margin: 5px;
+}
+
+.user-profile2 {
+  display: block;
+  border-radius: 100%;
+  background-color: rgb(203, 224, 232);
+  padding: 10px;
+  font-size: 2rem;
+  position: fixed;
+  top: 15px;
+  right: 50px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  align-items: center;
 }

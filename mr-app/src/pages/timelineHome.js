@@ -70,9 +70,13 @@ function TimeLineHome() {
 
   return (
     <>
-      <div className="search">
+      {/* <div className="search">
         <input type="text" ref={searchRef} />
         <button onClick={handleSearch}>Search</button>
+      </div> */}
+      <div className="timeline-header">
+        <h1>MEDMINDER</h1>
+        <p className="user-profile2">RB</p>
       </div>
       <div className="timeline">
         <Timeline>
