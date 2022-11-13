@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom/client";
-import React, { useEffect } from "react";
 import "../App.css";
 import { db, storage } from "../firebase.js";
 import {
@@ -47,6 +46,7 @@ const EventClick = () => {
   const [param] = useSearchParams();
   let currId = param.get("id");
   const [event, setEvent] = useState({});
+
 
   const getEvents = useCallback(async () => {
     const docRef = await doc(db, "user-events", currId);
@@ -99,6 +99,7 @@ const EventClick = () => {
         Back
       </button>
       <div className="event-header">
+
         <h1>EventName: {event.date}</h1>
         <h2 className="date">{event.eventType}</h2>
       </div>
@@ -112,7 +113,7 @@ const EventClick = () => {
               className="input-text"
               type="text"
               rows="9"
-              cols="95"
+              cols="97"
               ref={notesRef}
             />
             <br />
@@ -134,17 +135,19 @@ const EventClick = () => {
         )}
       </div>
       <div className="event-files">
-        <p>Files: </p>
-        <br />
-        <input
-          type="file"
-          onChange={(e) => {
-            setImageUpload(e.target.files[0]);
-          }}
-        />
-        <button className="button" onClick={uploadImage}>
-          Upload Image
-        </button>
+        <p className="files">Files: </p>
+        <div className="upload-files">
+          <input
+            type="file"
+            onChange={(e) => {
+              setImageUpload(e.target.files[0]);
+              uploadImage();
+            }}
+          />
+          {/* <button className="button" onClick={uploadImage}> */}
+          {/* Upload Image
+          </button> */}
+        </div>
         <div className="file-list">
           {imageList.map((url) => {
             return <img className="file-image" src={url}></img>;
