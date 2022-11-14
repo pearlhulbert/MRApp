@@ -1,1 +1,6 @@
-# MRApp
+# SandboxHackathon-MedminderApp
+This project was done as part of the application process for sandbox, a program during which students have to opportunity to create tech startups. One other engineer worked on this product with me, and we had one day to create and present this prototype. Before the event, I did the research for how to implement this idea and got some basic functions working. My partner did all of the styling. 
+
+This app displays a timeline containg events representing a user's medical appointment history. They can click on each event, which will take them to another page where they can make and edit notes associated with that appointment, as well as upload and display files.
+
+The front end was build in React (specifically React JS), and I used firebase for the back end. I used a library for the timeline, with a few adjustments. To save time, I manually added the database for this fake user to the database and displayed it inside each event. When a user clicks on an event, they are redirected to a page which shows any notes the user made about/files associated with the appointment. The user is able to edit and save notes, as well as upload new files. These are all grabbed from and stored in the database.  
